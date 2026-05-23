@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="display-6 mb-4">Panneau d'administration : Liste des membres</h1>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Pseudo</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_admin %}
+                            <span class="badge bg-danger">Administrateur</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Membre</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if user != current_user %}
+                            
+                            <!-- 1. BOUTON PROMOVOIR ADMIN (S'affiche uniquement si l'utilisateur n'est pas encore admin) -->
+                            {% if not user.is_admin %}
+                            <form action="{{ url_for('auth.make_admin', user_id=user.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-warning me-2">Promouvoir Admin</button>
+                            </form>
+                            {% endif %}
+
+                            <!-- 2. BOUTON SUPPRIMER LE COMPTE -->
+                            <form action="{{ url_for('auth.admin_delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('Bannir définitivement cet utilisateur ?');" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer le compte</button>
+                            </form>
+                            
+                        {% else %}
+                            <!-- Texte affiché sur votre propre ligne -->
+                            <small class="text-muted text-italic">C'est vous</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
