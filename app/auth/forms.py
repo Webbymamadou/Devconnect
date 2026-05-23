@@ -42,12 +42,13 @@ class RegistrationForm(FlaskForm):
 
 # 2. FORMULAIRE DE CONNEXION (Login)
 class LoginForm(FlaskForm):
-  email = StringField(message="Adresse Email", validators=[
-    DataRequired(message="Le mot de passe est obligatoire.")
+  email = StringField("Adresse Email",validators=[
+    DataRequired(message="Le mot de passe est obligatoire."),
+    Email(message="Veuillez saisir une adresse email valide")
   ])
   
   password = PasswordField("Mot de passe", validators=[
-   DataRequired("Le mot de passe est obligatoire")
+   DataRequired(message="Le mot de passe est obligatoire")
   ])
   
   remember = BooleanField("Se souvenir de moi")
