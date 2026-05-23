@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <!-- L'article complet -->
+        <article class="bg-white p-4 rounded shadow-sm mb-4">
+            <div class="d-flex justify-content-between align-items-start">
+                <h1 class="display-6">{{ post.title }}</h1>
+                <!-- Si l'utilisateur connecté est le créateur du post, on affiche le bouton Supprimer -->
+                {% if post.author == current_user %}
+                    <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cet article ?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                {% endif %}
+            </div>
+            <p class="text-muted mb-4" style="font-size: 0.9rem;">
+                Par <strong>{{ post.author.username }}</strong> le {{ post.date_posted.strftime('%d/%m/%Y à %H:%M') }}
+            </p>
+            <p class="lead" style="white-space: pre-line;">{{ post.content }}</p>
+        </article>
+
+        <!-- Espace Commentaires -->
+        <div class="bg-white p-4 rounded shadow-sm">
+            <h3 class="h5 mb-4">Commentaires ({{ post.comments|length }})</h3>
+
+            <!-- Formulaire d'ajout (visible uniquement si connecté) -->
+            {% if current_user.is_authenticated %}
+                <form method="POST" action="" class="mb-4">
+                    <div class="mb-3">
+                        <textarea class="form-control" name="content" rows="3" required placeholder="Laissez un commentaire constructif..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-dark px-3">Envoyer</button>
+                </form>
+            {% else %}
+                <div class="alert alert-light text-center mb-4">
+                    <small class="text-muted"><a href="{{ url_for('auth.login') }}">Connectez-vous</a> pour participer à la discussion.</small>
+                </div>
+            {% endif %}
+
+            <!-- Fil des commentaires existants -->
+            {% if post.comments %}
+                {% for comment in post.comments %}
+                    <div class="border-start border-3 border-secondary ps-3 mb-3">
+                        <p class="mb-1" style="font-size: 0.95rem;">{{ comment.content }}</p>
+                        <small class="text-muted" style="font-size: 0.8rem;">
+                            Par <strong>{{ comment.author.username }}</strong> le {{ comment.date_posted.strftime('%d/%m/%Y à %H:%M') }}
+                        </small>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted small">Aucun commentaire pour le moment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
